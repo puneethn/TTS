@@ -1,0 +1,109 @@
+#include <stdio.h>
+#include <libspe2.h>
+#include <pthread.h>
+#include<stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+void *ppu_pthread_function(void *arg) {
+  spe_context_ptr_t context = *(spe_context_ptr_t *) arg;
+  unsigned int entry = SPE_DEFAULT_ENTRY;
+  spe_context_run(context,&entry,0,NULL,NULL,NULL);
+  pthread_exit(NULL);
+}
+
+int file_exist (char *filename)
+{
+ struct stat   buffer;   
+ return (stat (filename, &buffer) == 0);
+}
+
+extern spe_program_handle_t uima_spe;
+int main(void) {
+  spe_context_ptr_t context[8];
+  pthread_t pthread[8];
+  unsigned int i;
+
+int a = file_exist("outputa.txt");
+int b = file_exist("outputb.txt");
+int c = file_exist("outputc.txt");
+int d = file_exist("outputd.txt");
+int e = file_exist("outpute.txt");
+int f = file_exist("outputf.txt");		
+int sum = a+b+c+d+e+f;
+
+  for (i=0;i<sum;i++) {
+    context[i] = spe_context_create(0,NULL);
+    spe_program_load(context[i],&uima_spe);
+    pthread_create(&pthread[i],NULL,&ppu_pthread_function,&context[i]);
+  }
+  // write SPU ids using mailboxes
+  for (i=0;i<sum;i++)
+    if (spe_in_mbox_write(context[i],&i,1,SPE_MBOX_ANY_NONBLOCKING) == 0)
+      printf("Message could not be written\n");
+
+  for (i=0;i<sum;i++) {
+    pthread_join(pthread[i],NULL);
+    spe_context_destroy(context[i]);
+  }
+printf ("End of PPU thread\n");
+
+a = file_exist("/root/Desktop/uima/DB/spea.sh");
+if(a==1){
+system("chmod 777 /root/Desktop/uima/DB/spea.sh");
+system("/root/Desktop/uima/DB/spea.sh");
+system("aplay -c 1 -t wav -q /root/Desktop/uima/outputa.wav");
+system("rm /root/Desktop/uima/DB/spea.sh");
+system("rm /root/Desktop/uima/outputa.wav");
+system("rm /root/Desktop/uima/spea.txt");
+system("rm /root/Desktop/uima/outputa.txt");
+}
+a = file_exist("/root/Desktop/uima/DB/speb.sh");
+if(a==1){
+system("chmod 777 /root/Desktop/uima/DB/speb.sh");
+system("/root/Desktop/uima/DB/speb.sh");
+system("aplay -c 1 -t wav -q /root/Desktop/uima/outputb.wav");
+system("rm /root/Desktop/uima/DB/speb.sh");
+system("rm /root/Desktop/uima/outputb.wav");
+system("rm /root/Desktop/uima/speb.txt");
+system("rm /root/Desktop/uima/outputb.txt");
+}
+a = file_exist("/root/Desktop/uima/DB/spec.sh");
+if(a==1){
+system("chmod 777 /root/Desktop/uima/DB/spec.sh");
+system("/root/Desktop/uima/DB/spec.sh");
+system("aplay -c 1 -t wav -q /root/Desktop/uima/outputc.wav");
+system("rm /root/Desktop/uima/DB/spec.sh");
+system("rm /root/Desktop/uima/outputc.wav");
+system("rm /root/Desktop/uima/spec.txt");
+
+}
+a = file_exist("/root/Desktop/uima/DB/sped.sh");
+if(a==1){
+system("chmod 777 /root/Desktop/uima/DB/sped.sh");
+system("/root/Desktop/uima/DB/sped.sh");
+system("aplay -c 1 -t wav -q /root/Desktop/uima/outputd.wav");
+system("rm /root/Desktop/uima/DB/sped.sh");
+system("rm /root/Desktop/uima/outputd.wav");
+system("rm /root/Desktop/uima/sped.txt");
+}
+a = file_exist("/root/Desktop/uima/DB/spee.sh");
+if(a==1){
+system("chmod 777 /root/Desktop/uima/DB/spee.sh");
+system("/root/Desktop/uima/DB/spee.sh");
+system("aplay -c 1 -t wav -q /root/Desktop/uima/outpute.wav");
+system("rm /root/Desktop/uima/DB/spee.sh");
+system("rm /root/Desktop/uima/outpute.wav");
+system("rm /root/Desktop/uima/spee.txt");
+}
+a = file_exist("/root/Desktop/uima/DB/spef.sh");
+if(a==1){
+system("chmod 777 /root/Desktop/uima/DB/spef.sh");
+system("/root/Desktop/uima/DB/spef.sh");
+system("aplay -c 1 -t wav -q /root/Desktop/uima/outputf.wav");
+system("rm /root/Desktop/uima/DB/spef.sh");
+system("rm /root/Desktop/uima/outputf.wav");
+system("rm /root/Desktop/uima/spef.txt");
+}
+  return 0;
+} 

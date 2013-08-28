@@ -1,0 +1,22 @@
+#include<stdio.h>
+#include<string.h>
+void main() {
+FILE *fp,*fp1;
+fp =fopen("abcd","r");
+fp1 =fopen("pqrs.sh","w");
+char ch[5];
+char str[10];
+fscanf(fp,"%s",ch);
+fprintf(fp1,"%s","sndfile-concat ");
+while(!feof(fp)) {
+	strcpy(str,ch);
+	strcat(str,".wav ");
+	printf("%s",str);
+	fprintf(fp1,"%s",str);
+	strcpy(str,"");
+	fscanf(fp,"%s",ch);}
+fprintf(fp1,"%s","output.wav");
+fclose(fp);
+fclose(fp1);
+system("/home/pushpendra/Desktop/os/pqrs.sh");
+}
